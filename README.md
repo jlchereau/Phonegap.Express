@@ -4,7 +4,12 @@
 
 ##Architecture and directories
 
+![Architecture](https://raw.githubusercontent.com/jlchereau/Phonegap.Express/master/docs/architecture.png "Architecture")
 
+This project includes two applications:
+
+- server.js, config\ and api\ make the nodesJS + ExpressJS RESTful API server,
+- www\ is the html5 application delivered to the browser or packaged as a Phonegap application
 
 ##Requirements
 
