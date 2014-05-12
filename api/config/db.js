@@ -3,6 +3,9 @@ var mongoose = require('mongoose'),
     connectionString = config.get("mongo:url"),
     options = { server: { auto_reconnect: true, poolSize: 10 } };
 
+//This is for heroku logs
+console.log('Phonegap.Express:' + connectionString);
+
 mongoose.connect(connectionString, options);
 
 /**
