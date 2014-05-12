@@ -2,7 +2,7 @@
   "name": "Phonegap.Express",
   "version": "0.0.0",
   "scripts": {
-      "start": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.2.0",
@@ -16,5 +16,7 @@
     "require-directory": "^1.2.0",
     "body-parser": "^1.2.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "supertest": "^0.12.1"
+  }
 }
