@@ -63,7 +63,7 @@
  * -------------------------------
  * Google: https://console.developers.google.com/project
  * Facebook: https://developers.facebook.com/apps/
- * Twitter:
+ * Twitter: https://apps.twitter.com/app/
  * Windows Live: https://account.live.com/developers/applications
  * Note: create a redirection in %systemroot%\system32\drivers\etc\hosts when necessary (windows live)
  */

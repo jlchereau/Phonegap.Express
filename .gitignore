@@ -5,7 +5,7 @@
 data/
 
 # Ignore Docs
-docs/
+# docs/
 
 # Ignore Node files
 node_modules/

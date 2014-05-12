@@ -29,7 +29,7 @@ Follow the instructions at:
 - Facebook: https://developers.facebook.com/apps/
 - Google: https://console.developers.google.com/project
 - Twitter: https://apps.twitter.com/app/
-- Windows Live:
+- Windows Live: https://account.live.com/developers/applications
 - Yahoo?
 
 Then update the clientID and clientSecret for all providers in https://github.com/jlchereau/Phonegap.Express/blob/master/config/development.json
