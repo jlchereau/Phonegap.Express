@@ -27,6 +27,7 @@ app.set('port', port);
 //    store: new Store({mongoose_connection : mongoose.connections[0]})
     //store: new Store({db : mongoose.connection.db })
 //}));
+app.use(express.static(__dirname + '/www'));
 
 //Initialize Passport!  Note: no need to use session middleware when each
 // request carries authentication credentials, as is the case with HTTP Bearer.

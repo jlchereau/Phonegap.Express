@@ -27,7 +27,7 @@
         DEBUG = true;
 
     api.endPoints = {
-        root: '',
+        root: 'http://expressjs.herokuapp.com',
         signIn: '/auth/{0}/signin',
         //token: '/Token', //todo
         signOut: '/auth/signout',
@@ -37,7 +37,7 @@
     };
 
     if (DEBUG) {
-        api.endPoints.root = 'http://www.sv-rndev-01.com:3000';
+        //api.endPoints.root = 'http://www.sv-rndev-01.com:3000';
         //api.endPoints.root = 'http://localhost:3000';
     }
 
