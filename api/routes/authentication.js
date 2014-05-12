@@ -44,13 +44,6 @@
  *       |                                          |                                         |
  *       |                                          |                                         |
  *
- * TODO
- * -------
- * Error handling
- * Missing: offline access + refresh tokens + revoke token + link accounts
- * Questions: refresh tokens and impact on signout; see: https://developers.facebook.com/blog/post/2011/05/13/how-to--handle-expired-access-tokens/
- * Is this not reinventing the wheel considering passport-oauth2?
- *
  * Documentation:
  * ---------------
  * Google: https://developers.google.com/accounts/docs/OAuth2WebServer
@@ -68,7 +61,7 @@
  * Note: create a redirection in %systemroot%\system32\drivers\etc\hosts when necessary (windows live)
  */
 
-var request = require('request'),//TODO: use https instead to minimize dependencies
+var request = require('request'),//TODO: use https instead of request module to minimize dependencies
     qs = require('querystring'),
     mongoose = require('mongoose'),
     Session = mongoose.model('Session'),

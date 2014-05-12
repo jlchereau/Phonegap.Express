@@ -2,6 +2,8 @@
 
 > Phonegap Express is a prototype built on MongoDB, nodeJS and Kendo UI to demonstrate accessing a RESTful JSON api secured with oAuth 2.0 in browsers and Phonegap
 
+![Web Application](https://raw.githubusercontent.com/jlchereau/Phonegap.Express/master/docs/webapp.png "Web Application")
+
 ##Architecture and directories
 
 ![Architecture](https://raw.githubusercontent.com/jlchereau/Phonegap.Express/master/docs/architecture.png "Architecture")

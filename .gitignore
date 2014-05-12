@@ -13,3 +13,4 @@ nodejs/
 
 # Ignore Dummy Files
 temp/
+Thumbs.db
