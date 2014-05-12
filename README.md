@@ -1,18 +1,39 @@
 #Phonegap.Express
 
-> Phonegap Express is a prototype including all the components of Kidoju: MongoDB, nodeJS, RESTful API, Kendo UI, oAuth 2.0 in browsers and Phonegap
+> Phonegap Express is a prototype built on MongoDB, nodeJS and Kendo UI to demonstrate accessing a RESTful JSON api secured with oAuth 2.0 in browsers and Phonegap
 
-## oAuth 2.0
+##Architecture and directories
 
-The oAuth flow that we have implemented is described at https://developers.google.com/accounts/docs/OAuth2UserAgent
 
-https://developers.google.com/accounts/docs/OAuth2WebServer
 
-### Configure oAuth endpoints
+##Requirements
 
-Google is easier to work with because it allows several callback URLS
+- Install mongoDB from http://www.mongodb.org/downloads
+- Install nodejs from http://nodejs.org/download/
+- Run setup.cmd (on Windows)
 
-Google: https://console.developers.google.com/project/323700862428/apiui/credential
-Facebook: https://developers.facebook.com/apps/628502177236998/settings/
-Twitter: https://apps.twitter.com/app/6137959
-Windows Live:
+##Configuration
+
+### API server address
+
+You can change the IP port of the API server at https://github.com/jlchereau/Phonegap.Express/blob/master/config/development.json
+
+The client (browser or Phonegap) gets the location of the API server from https://github.com/jlchereau/Phonegap.Express/blob/master/www/js/api.js#L40
+
+Windows Live does not authorize localhost as an application server, which can be worked around by configuring %SystemRoot%\system32\drivers\etc\hosts
+
+### oAuth provider configuration
+
+Follow the instructions at:
+
+- Facebook: https://developers.facebook.com/apps/
+- Google: https://console.developers.google.com/project
+- Twitter: https://apps.twitter.com/app/
+- Windows Live:
+- Yahoo?
+
+Then update the clientID and clientSecret for all providers in https://github.com/jlchereau/Phonegap.Express/blob/master/config/development.json
+
+##Execution and tests
+
+

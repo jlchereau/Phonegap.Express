@@ -1,8 +1,11 @@
 {
   "name": "Phonegap.Express",
   "version": "0.0.0",
+  "scripts": {
+      "start": "node server.js"
+  },
   "dependencies": {
-    "express": "^4.1.2",
+    "express": "^4.2.0",
     "nconf": "^0.6.9",
     "mongoose": "^3.8.9",
     "passport": "^0.2.0",
@@ -11,7 +14,7 @@
     "request": "^2.34.0",
     "cors": "^2.3.0",
     "require-directory": "^1.2.0",
-    "body-parser": "^1.0.2"
+    "body-parser": "^1.2.0"
   },
   "devDependencies": {}
 }
