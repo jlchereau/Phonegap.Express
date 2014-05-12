@@ -1,9 +1,9 @@
 {
     "express": {
-        "port"              : 3000
+        "port"              : 80
     },
     "mongo" : {
-        "url"               : "mongodb://localhost/PhonegapExpress"
+        "url"               : "mongodb://dbadmin:H3ll0W0rl4@ds063178.mongolab.com:63178/expressjs"
     },
     "facebook" : {
         "clientID" 		    : "628502177236998",
