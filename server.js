@@ -41,6 +41,8 @@ router.route('/api/contents')
     .get(routes.api.contents.getAll)
     .post(authentication.passport.authenticate('bearer', { session: false }), routes.api.contents.post);
 
+router.route('/heartbeat')
+    .get(routes.heartbeat.get);
 router.route('/values')
     .get(authentication.passport.authenticate('bearer', { session: false }), routes.api.values);
 router.route('/profile')

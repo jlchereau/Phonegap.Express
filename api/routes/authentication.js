@@ -327,14 +327,14 @@ exports.callback = function(req, res) {
 };
 
 /**
- * TODO: The token endpoint to renew tokens
+ * TODO: The endpoint to renew/refresh tokens
  * @param req
  * @param res
  */
 exports.token = function(req, res) {};
 
 /**
- * signout function removing the token from the user account
+ * signout
  * TODO: shouldn't we revoke the token instead?
  * NOTE: difference between logout and token revokation?
  * SEE: http://social.msdn.microsoft.com/Forums/windowsazure/en-US/f92e24bc-e685-4709-9e5e-7b203efef44b/how-do-i-sign-out-of-google-yahoo-or-liveid-and-use-a-different-account?forum=windowsazuresecurity
@@ -344,6 +344,8 @@ exports.token = function(req, res) {};
 exports.signout = function(req, res) {
     var user = req.user;
     if(user instanceof User) {
+        //TODO: shouldn't we revoke the token instead?
+        //But in this case, what happens to offline access?
         user.token = null;
         user.save();
     }

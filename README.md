@@ -44,3 +44,6 @@ Then update the clientID and clientSecret for all providers in https://github.co
 ##Execution and tests
 
 
+##Copyright
+
+
