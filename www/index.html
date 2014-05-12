@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Phonegap.Express</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//da7xgjtj801h2.cloudfront.net/2014.1.416/styles/kendo.common-bootstrap.min.css" rel="stylesheet">
+    <link href="//da7xgjtj801h2.cloudfront.net/2014.1.416/styles/kendo.bootstrap.min.css" rel="stylesheet">
+    <link href="./css/console.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//da7xgjtj801h2.cloudfront.net/2014.1.416/js/kendo.all.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/console.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Phonegap.Express</h1>
+        <div class="row">
+            &nbsp;&nbsp;
+            <a class="btn btn-danger login" data-provider="google" role="button" href="#"><i class="fa fa-google-plus"></i>&nbsp;Google</a>
+            &nbsp;
+            <a class="btn btn-primary login" data-provider="facebook" role="button" href="#"><i class="fa fa-facebook"></i>&nbsp;Facebook</a>
+            &nbsp;
+            <a class="btn btn-info login" data-provider="twitter" role="button" href="#"><i class="fa fa-twitter"></i>&nbsp;Twitter</a>
+            &nbsp;
+            <a class="btn btn-success login" data-provider="windowslive" role="button" href="#"><i class="fa fa-windows"></i>&nbsp;Windows Live</a>
+            &nbsp;
+            <a id="signout" class="btn btn-warning" role="button" href="#"><i class="fa fa-external-link"></i>&nbsp;Sign out</a>
+        </div>
+        <hr/>
+        <div class="row">
+            &nbsp;&nbsp;
+            <a id="profile" class="btn btn-default" role="button" href="#"><i class="fa fa-user"></i>&nbsp;Profile</a>
+            &nbsp;
+            <a id="values" class="btn btn-default" role="button" href="#"><i class="fa fa-bars"></i>&nbsp;Values</a>
+            &nbsp;|&nbsp;
+            <a class="btn btn-danger share" data-provider="google" role="button" href="#"><i class="fa fa-google-plus"></i>&nbsp;Share</a>
+            &nbsp;
+            <a class="btn btn-primary share" data-provider="facebook" role="button" href="#"><i class="fa fa-facebook"></i>&nbsp;Share</a>
+            &nbsp;
+            <a class="btn btn-info share" data-provider="twitter" role="button" href="#"><i class="fa fa-twitter"></i>&nbsp;Tweet</a>
+            &nbsp;
+            <a class="btn btn-success share" data-provider="windowslive" role="button" href="#"><i class="fa fa-windows"></i>&nbsp;TODO</a>
+        </div>
+        <hr />
+        <div data-role="grid" data-bind="source: contents" data-editable="inline" data-toolbar="['create']" data-columns="[{'title': 'Name', 'field': 'name'}, {'title': 'User', 'field': 'user'}, {'title': 'Created', 'field': 'created', 'format': '{0:dd-MMM-yyyy}'}, { command: ['edit', 'destroy'], title: ' ', width: '200px' }]"></div>
+        <hr />
+        <div class="console"></div>
+    </div>
+<script>
+    var FileModel = kendo.data.Model.define({
+            id: '_id',
+            fields: {
+                "name": {
+                    type: "string",
+                    required: true
+                },
+                "user": {
+                    type: "string",
+                    required: true
+                },
+                "created": {
+                    type: "date"
+                    //defaultValue: new Date()
+                },
+                "__v" : {
+                    type: "number"
+                }
+            }
+        }),
+        dataSource = new kendo.data.DataSource({
+            //autoSync: true,
+            transport: {
+                create: function(options) {
+                    api.contents.create(options.data)
+                        .done(function(result) {
+                            // notify the data source that the request succeeded
+                            options.success(result);
+                        })
+                        .fail(function(xhr) {
+                            // notify the data source that the request failed
+                            options.error(xhr);
+                        });
+                },
+                read: function(options) {
+                    api.contents.readAll()
+                        .done(function(result) {
+                            // notify the data source that the request succeeded
+                            options.success(result);
+                        })
+                        .fail(function(xhr) {
+                            // notify the data source that the request failed
+                            options.error(xhr);
+                        });
+                },
+                update: function(options) {
+                    api.contents.update(options.data)
+                        .done(function(result) {
+                            // notify the data source that the request succeeded
+                            options.success(result);
+                        })
+                        .fail(function(xhr) {
+                            // notify the data source that the request failed
+                            options.error(xhr);
+                        });
+                },
+                destroy: function(options) {
+                    api.contents.destroy(options.data)
+                        .done(function(result) {
+                            // notify the data source that the request succeeded
+                            options.success(result);
+                        })
+                        .fail(function(xhr) {
+                            // notify the data source that the request failed
+                            options.error(xhr);
+                        });
+                }
+            },
+            schema: {
+                model: FileModel
+            }
+        }),
+        viewModel = window.viewModel = kendo.observable({
+            name: 'Jacques',
+            contents: dataSource
+        });
+
+    $(document).ready(function (){
+
+        debug.log('application loaded at ' + window.location.href);
+        debug.log('access_token: ' + localStorage['access_token']);
+
+        $('.login').on('click', function(e) {
+            e.preventDefault(); //do not execute href
+            api.getSignInUrl($(e.target).data('provider'), window.location.href)
+                .done(function(url) {
+                    window.location.assign(url);
+                })
+                .fail(function(xhr, status, error){
+                    debug.error(status + ': ' + error);
+                });
+        });
+
+        $('#signout').on('click', function(e) {
+            e.preventDefault(); //do not execute href
+            api.signOut()
+                .done(function() {
+                    debug.log('Signed out');
+                })
+                .fail(function(xhr, status, error){
+                    debug.error(status + ': ' + error);
+                });
+        });
+
+        $('#profile').on('click', function(e) {
+            e.preventDefault(); //do not execute href
+            api.getProfile()
+                    .done(function(profile) {
+                        debug.log(JSON.stringify(profile));
+                    })
+                    .fail(function(xhr, status, error){
+                        debug.error(status + ': ' + error);
+                    });
+        });
+
+        $('#values').on('click', function(e) {
+            e.preventDefault(); //do not execute href
+            api.getValues()
+                .done(function(values) {
+                    debug.log(JSON.stringify(values));
+                })
+                .fail(function(xhr, status, error){
+                    debug.error(status + ': ' + error);
+                });
+        });
+
+        $('.share').on('click', function(e) {
+            e.preventDefault(); //do not execute href
+            alert('Not yet implemented!')
+        });
+
+        kendo.bind($('body'), viewModel);
+    });
+</script>
+</body>
+</html>

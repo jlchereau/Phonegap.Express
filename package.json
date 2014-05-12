@@ -1,0 +1,17 @@
+{
+  "name": "Phonegap.Express",
+  "version": "0.0.0",
+  "dependencies": {
+    "express": "^4.1.2",
+    "nconf": "^0.6.9",
+    "mongoose": "^3.8.9",
+    "passport": "^0.2.0",
+    "passport-http-bearer": "^1.0.1",
+    "querystring": "^0.2.0",
+    "request": "^2.34.0",
+    "cors": "^2.3.0",
+    "require-directory": "^1.2.0",
+    "body-parser": "^1.0.2"
+  },
+  "devDependencies": {}
+}

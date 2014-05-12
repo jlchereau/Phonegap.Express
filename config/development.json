@@ -1,0 +1,24 @@
+{
+    "express": {
+        "port"              : 3000
+    },
+    "mongo" : {
+        "url"               : "mongodb://localhost/PhonegapExpress"
+    },
+    "facebook" : {
+        "clientID" 		    : "628502177236998",
+        "clientSecret" 	    : "0814b0625cc82257279e53c7c420ae22"
+    },
+    "twitter" : {
+        "clientID" 		    : "onxS3Vqux8YlCT20kkR50tb6q",
+        "clientSecret" 	    : "AZ6TUfqTD8LEMS1bd5UqsgwVJl72bbLzCF70pTQDluTc9tNSti"
+    },
+    "google" : {
+        "clientID" 		    : "323700862428.apps.googleusercontent.com",
+        "clientSecret" 	    : "VNAfGPGE78rhV_qGh9Z99mVC"
+    },
+    "windowslive" : {
+        "clientID" 		    : "000000004011EB14",
+        "clientSecret" 	    : "adymm5kBjEWwNjv5X4hpwciabbCKocol"
+    }
+}

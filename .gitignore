@@ -1,0 +1,15 @@
+# Ignore Webstorm files
+.idea/
+
+# Ignore MongoDB database
+data/
+
+# Ignore Docs
+docs/
+
+# Ignore Node files
+node_modules/
+nodejs/
+
+# Ignore Dummy Files
+temp/
