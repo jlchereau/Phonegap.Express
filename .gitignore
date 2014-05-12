@@ -4,12 +4,13 @@
 # Ignore MongoDB database
 data/
 
-# Ignore Docs
-# docs/
-
 # Ignore Node files
 node_modules/
 nodejs/
+
+# Ignore files with passwords
+config/production.json
+config/test.json
 
 # Ignore Dummy Files
 temp/
