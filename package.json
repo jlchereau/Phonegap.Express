@@ -1,6 +1,7 @@
 {
   "name": "Phonegap.Express",
   "version": "0.0.0",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
@@ -18,5 +19,8 @@
   },
   "devDependencies": {
     "supertest": "^0.12.1"
+  },
+  "engines": {
+    "node": "v0.10.x"
   }
 }
