@@ -15,11 +15,12 @@ var express = require('express'),
     routes = require('./api/routes'),
 
     app = express(),
-    router = express.Router();
+    router = express.Router(),
+    port = process.env.PORT || config.get('express:port');
 
-console.log('Phonegap.ExpressJS: listening on port ' + config.get('express:port'));
+console.log('Phonegap.ExpressJS: listening on port ' + port);
 
-app.set('port', config.get('express:port'));
+app.set('port', port);
 //app.use(cookieParser()); //Otherwise 500 TypeError: Cannot read property 'connect.sid' of undefined
 //app.use(session({
 //    secret: config.get('session:secret'),
@@ -62,5 +63,5 @@ router.use(notFound.handler);
 
 app.use(router);
 
-http.createServer(app).listen(app.get('port'));
+http.createServer(app).listen(port);
 module.exports = app;
