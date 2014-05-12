@@ -113,6 +113,35 @@ var request = require('request'),//TODO: use https instead of request module to 
     };
 
 /**
+ * Get the client IP Address
+ * TODO: This needs to be improved
+ * See: http://stackoverflow.com/questions/14382725/how-to-get-the-correct-ip-address-of-a-client-into-a-node-socket-io-app-hosted-o
+ * See: http://esd.io/blog/flask-apps-heroku-real-ip-spoofing.html
+ * See: http://stackoverflow.com/questions/10849687/express-js-how-to-get-remote-client-address
+ * See: http://expressjs.com/guide.html#proxies
+ * @param req
+ * @returns {*}
+ */
+function getClientIp(req) {
+    var ipAddress;
+    // Amazon EC2 / Heroku workaround to get real client IP
+    var forwardedIpsStr = req.header('x-forwarded-for');
+    if (forwardedIpsStr) {
+        // 'x-forwarded-for' header may return multiple IP addresses in
+        // the format: "client IP, proxy 1 IP, proxy 2 IP" so take the
+        // the first one
+        var forwardedIps = forwardedIpsStr.split(',');
+        ipAddress = forwardedIps[0];
+    }
+    if (!ipAddress) {
+        // Ensure getting client IP address still works in
+        // development environment
+        ipAddress = req.connection.remoteAddress; //TODO: https???
+    }
+    return ipAddress;
+}
+
+/**
  * signin function returning a well-formed url to request an authorization code from the oAuth2 security provider (Google, Facebook, ...)
  * @param req
  * @param res
@@ -120,7 +149,7 @@ var request = require('request'),//TODO: use https instead of request module to 
 exports.signin = function(req, res) {
     //TODO limit list of allowed providers
     var session = new Session({
-        address: req.connection.remoteAddress,
+        address: getClientIp(req),
         agent: req.headers['user-agent'],
         provider: req.params.provider,
         returnUrl: req.query.returnUrl,
@@ -153,7 +182,7 @@ exports.callback = function(req, res) {
     //invalide scope => req.query.error + req.query.error_description
 
     Session.findOne({state: state}, function(err, data) {
-        if(data.address !== req.connection.remoteAddress) return res.send(400);
+        if(data.address !== getClientIp(req)) return res.send(400);
         if(data.agent !== req.headers['user-agent']) return res.send(400);
         if(data.provider !== req.params.provider) return res.send(400);
         session = data;
