@@ -1,6 +1,12 @@
 {
   "name": "Phonegap.Express",
+  "description": "Phonegap Express is a prototype built on MongoDB, nodeJS and Kendo UI to demonstrate accessing a RESTful JSON api secured with oAuth 2.0 from browsers and Phonegap",
   "version": "0.0.0",
+  "license": "MIT",
+  "repository": {
+     "type": "git",
+     "url": "https://github.com/jlchereau/Phonegap.Express.git"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
