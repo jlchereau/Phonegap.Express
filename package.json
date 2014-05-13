@@ -19,7 +19,7 @@
     "passport-http-bearer": "^1.0.1",
     "querystring": "^0.2.0",
     "request": "^2.34.0",
-    "cors": "^2.3.0",
+    "cors": "^2.3.1",
     "require-directory": "^1.2.0",
     "body-parser": "^1.2.0"
   },
