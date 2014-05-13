@@ -45,10 +45,11 @@ Then update the clientID and clientSecret for all providers in https://github.co
 
 The html 5 web application is available at:
 - http://dl.dropboxusercontent.com/u/32824246/phonegap.express/index.html
+- https://www.googledrive.com/host/0B2kgn9WIWu-DLUtwbW5xVFpfdGc/
 - http://expressjs.herokuapp.com/index.html
 
-The JSON RESTful api is only available at http://expressjs.herokuapp.com
-It can be tested at http://expressjs.herokuapp.com/heartbeat
+The JSON RESTful api is only available at http://expressjs.herokuapp.com.
+If it is running, http://expressjs.herokuapp.com/heartbeat should return 'OK'.
 
 ##Copyright
 
