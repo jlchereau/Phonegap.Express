@@ -24,20 +24,21 @@
         FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded',
         //TEXT_CONTENT_TYPE = 'text/plain',
         MODULE = 'api.js: ',
-        DEBUG = true;
+        DEBUG = true; //IMPORTANT: Set DEBUG = false in production
 
     api.endPoints = {
         root: 'http://expressjs.herokuapp.com',
         signIn: '/auth/{0}/signin',
-        //token: '/Token', //todo
         signOut: '/auth/signout',
+        heartbeat: '/heartbeat',
+        error: '/error', //This route does not exist and should return an error
         values: '/values',
         profile: '/profile',
         contents: '/api/contents'
     };
 
     if (DEBUG) {
-        //api.endPoints.root = 'http://www.sv-rndev-01.com:3000';
+        api.endPoints.root = 'http://www.sv-rndev-01.com:3000';
         //api.endPoints.root = 'http://localhost:3000';
     }
 
@@ -192,6 +193,34 @@
         });
     };
 
+    api.getHeartbeat = function () {
+        api.util.log('calling getHeartbeat');
+        return $.ajax({
+            url: api.endPoints.root + api.endPoints.heartbeat,
+            type: GET,
+            //xhrFields: { withCredentials: true }, //send cookies
+            //headers: api.util.getSecurityHeaders(),
+            crossDomain: true //TODO: not sure this is necessary????
+            /*
+             beforeSend: function (xhr, settings) {
+             xhr.withCredentials = true;
+             xhr.setRequestHeader('Authorization', 'Bearer ' + session.access_token);
+             }
+             */
+        });
+    };
+
+    api.getError = function () {
+        api.util.log('calling getError');
+        return $.ajax({
+            url: api.endPoints.root + api.endPoints.error,
+            type: GET,
+            //xhrFields: { withCredentials: true }, //send cookies
+            ///headers: api.util.getSecurityHeaders(),
+            crossDomain: true
+        });
+    };
+
     api.getProfile = function () {
         api.util.log('calling getProfile');
         return $.ajax({
@@ -199,13 +228,8 @@
             type: GET,
             cache: false,
             //xhrFields: { withCredentials: true },
-            headers: api.util.getSecurityHeaders()
-            /*
-             beforeSend: function (xhr, settings) {
-             xhr.withCredentials = true;
-             xhr.setRequestHeader('Authorization', 'Bearer ' + session.access_token);
-             }
-             */
+            headers: api.util.getSecurityHeaders(),
+            crossDomain: true
         });
     };
 
