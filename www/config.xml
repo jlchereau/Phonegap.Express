@@ -1,12 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.memba.expressjs" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Phonegap.ExpressJS</name>
-    <description>
-        A sample Apache Cordova application that responds to the deviceready event.
-    </description>
-    <author email="jlchereau@xxxxx.com" href="http://www.memba.com">
-        Memba Team
-    </author>
+<widget id="com.memba.express" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>Phonegap.Express</name>
+    <description>Phonegap.Express is a prototype built on MongoDB, nodeJS and Kendo UI to demonstrate accessing a RESTful JSON api secured with oAuth 2.0 from browsers and Phonegap.</description>
+    <author email="jlchereau@xxxxx.com" href="http://www.memba.com">Memba Team</author>
     <content src="index.html" />
     <access origin="*" />
+    <preference name="phonegap-version" value="3.4.0" />
+    <gap:plugin name="org.apache.cordova.device" />
+    <gap:plugin name="org.apache.cordova.console" />
+    <gap:plugin name="org.apache.cordova.dialogs" />
+    <gap:plugin name="org.apache.cordova.inappbrowser" />
 </widget>
