@@ -8,7 +8,7 @@
 
     var fn = Function,
         global = fn('return this')(),
-
+        STRING = 'string',
         MODULE = 'app.js',
         DEBUG = true;
 
@@ -89,7 +89,15 @@
             contents: dataSource
         });
 
-    $(document).ready(function (){
+    $(document).ready(function () {
+        if ((global.device) && ($.type(global.device.cordova) === STRING)) {
+            document.addEventListener("deviceready", onDeviceReady, false);
+        } else {
+            onDeviceReady();
+        }
+    });
+
+    function onDeviceReady() {
 
         debug.log('application loaded at ' + window.location.href);
         debug.log('access_token: ' + localStorage['access_token']);
@@ -172,41 +180,6 @@
         });
 
         kendo.bind($('body'), viewModel);
-    });
-
-
-    /*
-    var app = {
-        // Application Constructor
-        initialize: function() {
-            this.bindEvents();
-        },
-        // Bind Event Listeners
-        //
-        // Bind any events that are required on startup. Common events are:
-        // 'load', 'deviceready', 'offline', and 'online'.
-        bindEvents: function() {
-            document.addEventListener('deviceready', this.onDeviceReady, false);
-        },
-        // deviceready Event Handler
-        //
-        // The scope of 'this' is the event. In order to call the 'receivedEvent'
-        // function, we must explicity call 'app.receivedEvent(...);'
-        onDeviceReady: function() {
-            app.receivedEvent('deviceready');
-        },
-        // Update DOM on a Received Event
-        receivedEvent: function(id) {
-            var parentElement = document.getElementById(id);
-            var listeningElement = parentElement.querySelector('.listening');
-            var receivedElement = parentElement.querySelector('.received');
-
-            listeningElement.setAttribute('style', 'display:none;');
-            receivedElement.setAttribute('style', 'display:block;');
-
-            console.log('Received Event: ' + id);
-        }
-    };
-    */
+    }
 
 }(jQuery));
