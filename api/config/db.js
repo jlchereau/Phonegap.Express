@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     config = require('./configuration'),
-    connectionString = config.get("mongo:url"),
+    connectionString = /*process.env.MONGOLAB_URI || process.env.MONGOHQ_URL ||*/ config.get("mongo:url"),
     options = { server: { auto_reconnect: true, poolSize: 10 } };
 
 //This is for heroku logs

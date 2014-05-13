@@ -27,6 +27,20 @@ function Authentication() {
         }
     ));
 
+    /*
+     // Serialize
+     passport.serializeUser(function(user, done) {
+     done(null, user._id);
+     });
+
+     // Deserialize
+     passport.deserializeUser(function(id, done) {
+     User.findOne({ _id: id }).exec(function(err, user) {
+     done(err, user);
+     });
+     });
+     */
+
 };
 
 module.exports = new Authentication();

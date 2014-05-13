@@ -48,7 +48,7 @@
  * ---------------
  * Google: https://developers.google.com/accounts/docs/OAuth2WebServer
  * Facebook: https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/
- * Twitter: https://dev.twitter.com/docs/auth/application-only-auth
+ * Twitter: https://dev.twitter.com/docs/auth/3-legged-authorization
  * Windows Live: http://msdn.microsoft.com/en-us/library/dn631818.aspx
  * Note: possibly LinkedIn, Yahoo????
  *
@@ -67,7 +67,15 @@ var request = require('request'),//TODO: use https instead of request module to 
     Session = mongoose.model('Session'),
     User = mongoose.model('User'),
     config = require('../config/configuration'),
+    /*
+    oAuth1 = {
+        version: 1
+        //aAuth1 vocabulary to be used with Twitter and other providers implementing the oAuth1 flow
+    },
+    */
+    //oAuth 2.0 vocabulary
     oAuth2 = {
+        version: 2,
         code                        : 'code',
         grant_type                  : 'authorization_code',
         access_token                : 'access_token', //,
@@ -76,49 +84,58 @@ var request = require('request'),//TODO: use https instead of request module to 
         //expires_in                  : 'expires_in',
         //state                       : 'state',
     },
+    //supported/tested provider configuration
     providers = {
         facebook: {
+            //oAuth: oAuth2 -> test providers[provider].oAuth.version to determine flow and vocabulary
             authorizationURL        : 'https://www.facebook.com/dialog/oauth',
             tokenURL                : 'https://graph.facebook.com/oauth/access_token',
             refreshUrl              : '', //TODO
             revokeUrl               : '', //TODO
+            verifyUrl               : '', //TODO
             profileURL              : 'https://graph.facebook.com/me',
             scope                   : 'email public_profile'
         },
         google: {
+            //oAuth: oAuth2 -> test providers[provider].oAuth.version to determine flow and vocabulary
             authorizationURL        : 'https://accounts.google.com/o/oauth2/auth',
             tokenURL                : 'https://accounts.google.com/o/oauth2/token',
             refreshUrl              : '', //TODO
             revokeUrl               : 'https://accounts.google.com/o/oauth2/revoke', //TODO
+            verifyUrl               : 'https://www.googleapis.com/oauth2/v1/tokeninfo', //TODO
             profileURL              : 'https://www.googleapis.com/oauth2/v1/userinfo',
             scope                   : 'email profile' //'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
         },
         twitter: {
+            //oAuth: oAuth1 -> test providers[provider].oAuth.version to determine flow and vocabulary
             authorizationURL        : '', //Not used - See https://dev.twitter.com/docs/auth/application-only-auth
             tokenURL                : 'https://api.twitter.com/oauth2/token',
             refreshUrl              : '', //TODO
             revokeUrl               : 'https://api.twitter.com/oauth2/invalidate_token', //TODO
+            verifyUrl               : '', //TODO
             profileURL              : '',
             scope                   : ''
         },
         windowslive: {
+            //oAuth: oAuth2 -> test providers[provider].oAuth.version to determine flow and vocabulary
             authorizationURL        : 'https://login.live.com/oauth20_authorize.srf',
             tokenURL                : 'https://login.live.com/oauth20_token.srf',
             refreshUrl              : '', //TODO
             revokeUrl               : '', //TODO
+            verifyUrl               : '', //TODO
             profileURL              : 'https://apis.live.net/v5.0/me',
             scope                   : 'wl.basic wl.signin wl.emails'
-          //scope                   : 'wl.basic wl.offline_access wl.signin wl.emails' //See: http://msdn.microsoft.com/en-us/library/dn631845.aspx
+           //scope                   : 'wl.basic wl.offline_access wl.signin wl.emails' //See: http://msdn.microsoft.com/en-us/library/dn631845.aspx
         }
     };
 
 /**
  * Get the client IP Address
- * TODO: This needs to be improved
+ * TODO: This needs to be improved to prevent IP spoofing
+ * See: http://expressjs.com/guide.html#proxies
  * See: http://stackoverflow.com/questions/14382725/how-to-get-the-correct-ip-address-of-a-client-into-a-node-socket-io-app-hosted-o
  * See: http://esd.io/blog/flask-apps-heroku-real-ip-spoofing.html
  * See: http://stackoverflow.com/questions/10849687/express-js-how-to-get-remote-client-address
- * See: http://expressjs.com/guide.html#proxies
  * @param req
  * @returns {*}
  */
@@ -147,7 +164,6 @@ function getClientIp(req) {
  * @param res
  */
 exports.signin = function(req, res) {
-    //TODO limit list of allowed providers
     var session = new Session({
         address: getClientIp(req),
         agent: req.headers['user-agent'],
@@ -155,13 +171,14 @@ exports.signin = function(req, res) {
         returnUrl: req.query.returnUrl,
         state: Math.floor(Math.random() * 1e18)
     });
+    if(providers[session.provider] === undefined) return res.send(404);
     session.save(function(err, data){
         var params = {
             response_type: oAuth2.code,
             client_id: config.get(session.provider + ':clientID'),
             redirect_uri: (req.connection.encrypted ? 'https://' : 'http://') + req.headers.host + '/auth/' + session.provider + '/callback',
             state: session.state,
-            //TODO: access_type: 'offline' and scope 'wl.offline_access'
+            //TODO: access_type: 'offline' and scope 'wl.offline_access' if we want a refresh_token
             scope: providers[session.provider].scope
         };
         res.set('Content-Type', 'text/plain');
@@ -170,7 +187,7 @@ exports.signin = function(req, res) {
 };
 
 /**
- * The oAuth2 callback called by the security provider to a valid token from teh authorization code
+ * The oAuth2 callback redirected to by the security provider to send a valid token from the authorization code
  * @param req
  * @param res
  */
@@ -178,12 +195,17 @@ exports.callback = function(req, res) {
     var state = parseFloat(req.query.state),
         session, token, user;
 
+    //TODO: maybe we should check that the referrer is a known identity provider
+
     //if(req.query.code === undefined) relevant test?
-    //invalide scope => req.query.error + req.query.error_description
+    //test invalid scope => req.query.error + req.query.error_description
 
     Session.findOne({state: state}, function(err, data) {
+        //Ensure that the token is delivered to the IP address which has requested the authorization code
         if(data.address !== getClientIp(req)) return res.send(400);
+        //Ensure that the token is delivered to the user agent which has requested the authorization code
         if(data.agent !== req.headers['user-agent']) return res.send(400);
+        //Ensure that the identity provider used to deliver the token is the identity provider for which an authorization code has been requested (maybe overkill)
         if(data.provider !== req.params.provider) return res.send(400);
         session = data;
         var params = {
@@ -266,7 +288,7 @@ exports.callback = function(req, res) {
      * @param body
      */
     function profileHandler(err, resp, body) {
-        var profile = parseProfile(body), query = {};
+        var profile = profileParser(body), query = {};
         if (profile.error) return console.error("Error returned from Google: ", profile.error);
         query[session.provider + '.id'] = profile.id;
         User.findOne(query, function(err, data) {
@@ -297,8 +319,12 @@ exports.callback = function(req, res) {
      * Ensures that the parsed profile will fit the database schema
      * @param body
      */
-    function parseProfile(body) {
+    function profileParser(body) {
         var temp = JSON.parse(body), profile = {};
+        if (temp.error) {
+            profile.error = temp.error;
+            //TODO: there might be other properties to consider
+        }
         if (temp.email) {
             profile.email = temp.email;
         } else if (temp.emails) {
@@ -354,6 +380,16 @@ exports.callback = function(req, res) {
         return profile;
     }
 };
+
+/**
+ * Method used by passport-http-bearer to verify the token
+ * @param req
+ * @param res
+ */
+exports.verify = function(req, res) {
+    console.log('verify token');
+};
+
 
 /**
  * TODO: The endpoint to renew/refresh tokens

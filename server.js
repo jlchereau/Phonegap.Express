@@ -20,6 +20,7 @@ var express = require('express'),
 
 console.log('Phonegap.ExpressJS: listening on port ' + port);
 
+app.disable('x-powered-by');
 app.set('port', port);
 //app.use(cookieParser()); //Otherwise 500 TypeError: Cannot read property 'connect.sid' of undefined
 //app.use(session({
