@@ -120,7 +120,7 @@
                 api.getSignInUrl(provider, returnUrl)
                     .done(function (url) {
                         if(global.device && ($.type(global.device.cordova) === STRING)) { //running under Phonegap -> open InAppBrowser
-                            var authWindow = window.open(url, '_blank', 'location=yes');
+                            var authWindow = window.open(url, '_blank', 'location=no');
                             $(authWindow).on('loadstart', function(e) {
                                 var url = e.originalEvent.url;
                                 debug.log(url); //the loadstart event is triggered each time a new url (redirection) is loaded
