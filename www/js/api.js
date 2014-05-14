@@ -25,7 +25,7 @@
         FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded',
         //TEXT_CONTENT_TYPE = 'text/plain',
         MODULE = 'api.js: ',
-        DEBUG = true; //IMPORTANT: Set DEBUG = false in production
+        DEBUG = false; //IMPORTANT: Set DEBUG = false in production
 
     api.endPoints = {
         root: 'http://expressjs.herokuapp.com',

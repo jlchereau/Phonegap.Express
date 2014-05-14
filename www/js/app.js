@@ -10,7 +10,7 @@
         global = fn('return this')(),
         STRING = 'string',
         MODULE = 'app.js: ',
-        DEBUG = true;
+        DEBUG = false;
 
     var ContentModel = kendo.data.Model.define({
             id: '_id',
