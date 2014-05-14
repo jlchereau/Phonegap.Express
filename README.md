@@ -49,7 +49,9 @@ The html 5 web application is available at:
 - http://expressjs.herokuapp.com/index.html
 
 The JSON RESTful api is only available at http://expressjs.herokuapp.com.
-If it is running, http://expressjs.herokuapp.com/heartbeat should return 'OK'.
+If it is running, http://expressjs.herokuapp.com/heartbeat should return 'OK' with/without authentication.
+
+The Phonegap applications can be downloaded from https://build.phonegap.com/apps/916461/share
 
 ##Copyright
 
