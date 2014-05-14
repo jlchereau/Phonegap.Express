@@ -75,7 +75,7 @@
             return {};
         },
 
-        getAccessTokenHashPos: function(location) {
+        getAccessTokenHashPos: function (location) {
             if ($.type(location) !== STRING) return -1;
             return Math.max(
                 location.indexOf(HASH + ACCESS_TOKEN), //Facebook and Google return access_token first
@@ -97,7 +97,7 @@
                 });
                 //TODO: check state, token type, etc.
                 //TODO: set expiration date
-                if($.type(data.access_token) === STRING) {
+                if ($.type(data.access_token) === STRING) {
                     api.util.setAccessToken(data.access_token);
                 }
             }
@@ -139,7 +139,7 @@
         /**
          * Clean the history from token information
          */
-        cleanHistory: function() {
+        cleanHistory: function () {
             var pos = api.util.getAccessTokenHashPos(window.location.hash);
             if (pos >= 0) {
                 if (history) {
