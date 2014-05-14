@@ -10,6 +10,7 @@
     var fn = Function,
         global = fn('return this')(),
         api = global.api = global.api || {},
+        STRING = 'string',
         EQUALS = '=',
         HASH = '#',
         ACCESS_TOKEN = 'access_token',
@@ -38,13 +39,14 @@
     };
 
     if (DEBUG) {
-        api.endPoints.root = 'http://www.sv-rndev-01.com:3000';
-        //api.endPoints.root = 'http://localhost:3000';
+        //api.endPoints.root = 'http://www.sv-rndev-01.com:3000';
+        api.endPoints.root = 'http://localhost:3000';
     }
 
     $(document).ready(function () {
         api.util.log('access_token: ' + localStorage[ACCESS_TOKEN]);
-        api.util.parseAccessToken();
+        api.util.parseAccessToken(window.location.href);
+        api.util.cleanHistory();
     });
 
     api.util = {
@@ -66,24 +68,27 @@
         },
 
         getSecurityHeaders: function () {
-            var accessToken = sessionStorage[ACCESS_TOKEN] || localStorage[ACCESS_TOKEN];
+            var accessToken = localStorage[ACCESS_TOKEN];
             if (accessToken) {
-                return { "Authorization": "Bearer " + accessToken };
+                return { 'Authorization': 'Bearer ' + accessToken };
             }
             return {};
         },
 
-        parseAccessToken: function () {
-            var hash = window.location.hash,
-                pos1 = Math.max(
-                    hash.indexOf(HASH + ACCESS_TOKEN), //Facebook and Google return access_token first
-                    hash.indexOf(HASH + TOKEN_TYPE) //, //Windows Live returns token_type first
-                    //hash.indexOf(HASH + EXPIRES_IN),
-                    //hash.indexOf(HASH + STATE)
-                ),
-                data = {};
+        getAccessTokenHashPos: function(location) {
+            if ($.type(location) !== STRING) return -1;
+            return Math.max(
+                location.indexOf(HASH + ACCESS_TOKEN), //Facebook and Google return access_token first
+                location.indexOf(HASH + TOKEN_TYPE) //, //Windows Live returns token_type first
+                //location.indexOf(HASH + EXPIRES_IN), //Others might have them in a different order
+                //location.indexOf(HASH + STATE)
+            );
+        },
+
+        parseAccessToken: function (url) {
+            var pos1 = api.util.getAccessTokenHashPos(url), data = {};
             if (pos1 >= 0) {
-                var keyValues = hash.substr(pos1 + 1).split('&');
+                var keyValues = url.substr(pos1 + 1).split('&');
                 $.each(keyValues, function (index, keyValue) {
                     var pos2 = keyValue.indexOf(EQUALS);
                     if (pos2 > 0 && pos2 < keyValue.length - EQUALS.length) {
@@ -91,74 +96,57 @@
                     }
                 });
                 //TODO: check state, token type, etc.
-                api.util.setAccessToken(data.access_token, true);
-                if (history) {
-                    history.replaceState({}, document.title, window.location.pathname + hash.substr(0, pos1));
-                } else {
-                    window.location.hash = hash.substr(0, pos1); // for older browsers, might leave a # behind
+                //TODO: set expiration date
+                if($.type(data.access_token) === STRING) {
+                    api.util.setAccessToken(data.access_token);
                 }
             }
             return data;
         },
 
-        setAccessToken: function (accessToken, persistent) {
-            if (persistent) {
-                localStorage[ACCESS_TOKEN] = accessToken;
-            } else {
-                sessionStorage[ACCESS_TOKEN] = accessToken;
-            }
-            api.util.log('access_token added to ' + persistent ? 'localStorage' : 'sessionStorage');
+        setAccessToken: function (accessToken) {
+            localStorage[ACCESS_TOKEN] = accessToken;
+            api.util.log('access_token added to localStorage');
         },
 
         clearAccessToken: function () {
             localStorage.removeItem(ACCESS_TOKEN);
-            sessionStorage.removeItem(ACCESS_TOKEN);
-            api.util.log('access_token removed from localStorage and sessionStorage');
+            api.util.log('access_token removed from localStorage');
         },
 
+        /**
+         * Remove any token information from a url
+         * Check its use in api.getSignInUrl where returnUrl would normally be window.location.href
+         * In a browser, the whole authentication process redirects the browser to returnUrl#access_token=...
+         * When authenticating again from this location, one would keep adding #access_token=... to the returnUrl, thus a requirement for cleaning it
+         * @param url
+         * @returns {*}
+         */
         cleanUrl: function (url) {
             var ret = url,
-                pos = Math.max(
-                    ret.indexOf(HASH + ACCESS_TOKEN), //Google and Facebook return access_token first
-                    ret.indexOf(HASH + TOKEN_TYPE)    //Windows Live returns token_type first
-                    //ret.indexOf(HASH + EXPIRES_IN),
-                    //ret.indexOf(HASH + STATE)
-                );
+                pos = api.util.getAccessTokenHashPos(url);
             api.util.log('url before cleaning token info: ' + url);
             if (pos >= 0) {
                 ret = ret.substring(0, pos);
             }
-            if (ret.slice(-1) === HASH) {
+            if (ret.slice(-1) === HASH) { //remove trailing hash if any
                 ret = ret.substring(0, ret.length - 1);
             }
             api.util.log('url after cleaning token info: ' + ret);
             return ret;
         },
 
-        //TODO: check OWIN code about this....
-        archiveSessionStorageToLocalStorage: function () {
-            var backup = {};
-
-            for (var i = 0; i < sessionStorage.length; i++) {
-                backup[sessionStorage.key(i)] = sessionStorage[sessionStorage.key(i)];
-            }
-
-            localStorage["sessionStorageBackup"] = JSON.stringify(backup);
-            sessionStorage.clear();
-        },
-
-        restoreSessionStorageFromLocalStorage: function () {
-            var backupText = localStorage["sessionStorageBackup"],
-                backup;
-
-            if (backupText) {
-                backup = JSON.parse(backupText);
-
-                for (var key in backup) {
-                    sessionStorage[key] = backup[key];
+        /**
+         * Clean the history from token information
+         */
+        cleanHistory: function() {
+            var pos = api.util.getAccessTokenHashPos(window.location.hash);
+            if (pos >= 0) {
+                if (history) {
+                    history.replaceState({}, document.title, window.location.pathname + window.location.hash.substr(0, pos));
+                } else {
+                    window.location.hash = window.location.hash.substr(0, pos); // for older browsers, might leave a # behind
                 }
-
-                localStorage.removeItem("sessionStorageBackup");
             }
         }
     };
@@ -189,7 +177,7 @@
             //xhrFields: { withCredentials: true },
             headers: api.util.getSecurityHeaders()
         }).always(function () {
-            api.util.clearAccessToken();
+            api.util.clearAccessToken(); //TODO: review
         });
     };
 
@@ -285,7 +273,7 @@
         },
 
         destroy: function (data) {
-            console.log('destroy');
+            api.util.log('destroy');
             return $.ajax({
                 url: api.endPoints.root + api.endPoints.contents + '/' + data._id,
                 type: 'DELETE',

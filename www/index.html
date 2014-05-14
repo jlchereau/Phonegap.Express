@@ -6,6 +6,7 @@
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
     <title>Phonegap.Express</title>
+    <!--
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
     <link href="//da7xgjtj801h2.cloudfront.net/2014.1.416/styles/kendo.common-bootstrap.min.css" rel="stylesheet">
@@ -14,52 +15,61 @@
     <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="//da7xgjtj801h2.cloudfront.net/2014.1.416/js/kendo.all.min.js"></script>
+    -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/font-awesome.min.css" rel="stylesheet">
+    <link href="./css/kendo.common-bootstrap.min.css" rel="stylesheet">
+    <link href="./css/kendo.bootstrap.min.css" rel="stylesheet">
+    <link href="./css/console.css" rel="stylesheet">
+    <script src="./js/jquery-1.9.1.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/kendo.all.min.js"></script>
     <script src="cordova.js"></script>
     <script src="./js/api.js"></script>
     <script src="./js/console.js"></script>
     <script src="./js/app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Phonegap.Express</h1>
-        <div class="row">
-            &nbsp;&nbsp;&nbsp;
-            <a class="btn btn-danger login" data-provider="google" role="button" href="#"><i class="fa fa-google-plus"></i>&nbsp;Google</a>
-            &nbsp;
-            <a class="btn btn-primary login" data-provider="facebook" role="button" href="#"><i class="fa fa-facebook"></i>&nbsp;Facebook</a>
-            &nbsp;
-            <a class="btn btn-info login" data-provider="twitter" role="button" href="#"><i class="fa fa-twitter"></i>&nbsp;Twitter</a>
-            &nbsp;
-            <a class="btn btn-success login" data-provider="windowslive" role="button" href="#"><i class="fa fa-windows"></i>&nbsp;Windows Live</a>
-            &nbsp;
-            <a id="signout" class="btn btn-warning" role="button" href="#"><i class="fa fa-external-link"></i>&nbsp;Sign out</a>
-        </div>
-        <hr/>
-        <div class="row">
-            &nbsp;&nbsp;&nbsp;
-            <a class="btn btn-default test" data-endpoint="heartbeat" role="button" href="#"><i class="fa fa-unlock-alt"></i>&nbsp;Heartbeat</a>
-            &nbsp;
-            <a class="btn btn-default test" data-endpoint="error" role="button" href="#"><i class="fa fa-warning"></i>&nbsp;Error</a>
-            &nbsp;|&nbsp;
-            <a class="btn btn-default test" data-endpoint="profile" role="button" href="#"><i class="fa fa-user"></i>&nbsp;Profile</a>
-            &nbsp;
-            <a class="btn btn-default test" data-endpoint="values" role="button" href="#"><i class="fa fa-bars"></i>&nbsp;Values</a>
-        </div>
-        <hr/>
-        <div class="row">
-            &nbsp;&nbsp;&nbsp;
-            <a class="btn btn-danger share" data-provider="google" role="button" href="#"><i class="fa fa-google-plus"></i>&nbsp;Share</a>
-            &nbsp;
-            <a class="btn btn-primary share" data-provider="facebook" role="button" href="#"><i class="fa fa-facebook"></i>&nbsp;Share</a>
-            &nbsp;
-            <a class="btn btn-info share" data-provider="twitter" role="button" href="#"><i class="fa fa-twitter"></i>&nbsp;Tweet</a>
-            &nbsp;
-            <a class="btn btn-success share" data-provider="windowslive" role="button" href="#"><i class="fa fa-windows"></i>&nbsp;TODO</a>
-        </div>
-        <hr />
-        <div data-role="grid" data-bind="source: contents" data-editable="inline" data-toolbar="['create']" data-columns="[{'title': 'Name', 'field': 'name'}, {'title': 'User', 'field': 'user'}, {'title': 'Created', 'field': 'created', 'format': '{0:dd-MMM-yyyy}'}, { command: ['edit', 'destroy'], title: ' ', width: '200px' }]"></div>
-        <hr />
-        <div class="console"></div>
+<div class="container">
+    <h1>Phonegap.Express</h1>
+    <div class="row">
+        &nbsp;&nbsp;&nbsp;
+        <a class="btn btn-danger login" data-provider="google" role="button" href="#"><i class="fa fa-google-plus"></i>&nbsp;Google</a>
+        &nbsp;
+        <a class="btn btn-primary login" data-provider="facebook" role="button" href="#"><i class="fa fa-facebook"></i>&nbsp;Facebook</a>
+        &nbsp;
+        <a class="btn btn-info login" data-provider="twitter" role="button" href="#"><i class="fa fa-twitter"></i>&nbsp;Twitter</a>
+        &nbsp;
+        <a class="btn btn-success login" data-provider="windowslive" role="button" href="#"><i class="fa fa-windows"></i>&nbsp;Windows Live</a>
+        &nbsp;
+        <a id="signout" class="btn btn-warning" role="button" href="#"><i class="fa fa-external-link"></i>&nbsp;Sign out</a>
     </div>
+    <hr/>
+    <div class="row">
+        &nbsp;&nbsp;&nbsp;
+        <a class="btn btn-default test" data-endpoint="heartbeat" role="button" href="#"><i class="fa fa-unlock-alt"></i>&nbsp;Heartbeat</a>
+        &nbsp;
+        <a class="btn btn-default test" data-endpoint="error" role="button" href="#"><i class="fa fa-warning"></i>&nbsp;Error</a>
+        &nbsp;|&nbsp;
+        <a class="btn btn-default test" data-endpoint="profile" role="button" href="#"><i class="fa fa-user"></i>&nbsp;Profile</a>
+        &nbsp;
+        <a class="btn btn-default test" data-endpoint="values" role="button" href="#"><i class="fa fa-bars"></i>&nbsp;Values</a>
+    </div>
+    <hr/>
+    <div class="row">
+        &nbsp;&nbsp;&nbsp;
+        <a class="btn btn-danger share" data-provider="google" role="button" href="#"><i class="fa fa-google-plus"></i>&nbsp;Share</a>
+        &nbsp;
+        <a class="btn btn-primary share" data-provider="facebook" role="button" href="#"><i class="fa fa-facebook"></i>&nbsp;Share</a>
+        &nbsp;
+        <a class="btn btn-info share" data-provider="twitter" role="button" href="#"><i class="fa fa-twitter"></i>&nbsp;Tweet</a>
+        &nbsp;
+        <a class="btn btn-success share" data-provider="windowslive" role="button" href="#"><i class="fa fa-windows"></i>&nbsp;TODO</a>
+    </div>
+    <hr />
+    <div data-role="grid" data-bind="source: contents" data-editable="inline" data-toolbar="['create']" data-columns="[{'title': 'Name', 'field': 'name'}, {'title': 'User', 'field': 'user'}, {'title': 'Created', 'field': 'created', 'format': '{0:dd-MMM-yyyy}'}, { command: ['edit', 'destroy'], title: ' ', width: '200px' }]"></div>
+    <hr />
+    <div class="console"></div>
+</div>
 </body>
 </html>

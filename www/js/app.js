@@ -9,7 +9,7 @@
     var fn = Function,
         global = fn('return this')(),
         STRING = 'string',
-        MODULE = 'app.js',
+        MODULE = 'app.js: ',
         DEBUG = true;
 
     var ContentModel = kendo.data.Model.define({
@@ -90,6 +90,7 @@
         });
 
     $(document).ready(function () {
+        api.util.log(MODULE + 'DOM ready');
         if ((global.device) && ($.type(global.device.cordova) === STRING)) {
             document.addEventListener("deviceready", onDeviceReady, false);
         } else {
@@ -99,6 +100,7 @@
 
     function onDeviceReady() {
 
+        api.util.log(MODULE + 'device ready');
         debug.log('application loaded at ' + window.location.href);
         debug.log('access_token: ' + localStorage['access_token']);
 
@@ -108,26 +110,29 @@
             if (provider === 'twitter') {
                 alert('Not yet implemented!');
             } else {
-                global.device = true;
-                api.getSignInUrl(provider, window.location.href)
+                //In Phonegap, windows.location.href = "x-wmapp0:www/index.html" and our server cannot redirect the InAppBrowser to such location
+                //The oAuth recommendation is to use the redirect_uri "urn:ietf:wg:oauth:2.0:oob" which sets the authorization code in the browser's title.
+                //However, we can't access the title of the InAppBrowser.
+                //Instead, we pass a bogus redirect_uri of "http://localhost", which means the authorization code will get set in the url.
+                //We can access this url in the loadstart and loadstop events.
+                //So if we bind the loadstart event, we can find the access_token code and close the InAppBrowser after the user has granted us access to their data.
+                var returnUrl = (global.device && ($.type(global.device.cordova) === STRING)) ? 'http://localhost' : window.location.href
+                api.getSignInUrl(provider, returnUrl)
                     .done(function (url) {
-                        if(global.device) { //running under Phonegap
-                            // open Cordova inapp-browser with login url
+                        if(global.device && ($.type(global.device.cordova) === STRING)) { //running under Phonegap -> open InAppBrowser
                             var authWindow = window.open(url, '_blank', 'location=yes');
-                            //The recommendation is to use the redirect_uri "urn:ietf:wg:oauth:2.0:oob"
-                            //which sets the authorization code in the browser's title. However, we can't
-                            //access the title of the InAppBrowser.
-                            //
-                            //Instead, we pass a bogus redirect_uri of "http://localhost", which means the
-                            //authorization code will get set in the url. We can access the url in the
-                            //loadstart and loadstop events. So if we bind the loadstart event, we can
-                            //find the authorization code and close the InAppBrowser after the user
-                            //has granted us access to their data.
-                            $(authWindow).on('load loadstart', function(e) {
+                            $(authWindow).on('loadstart', function(e) {
                                 var url = e.originalEvent.url;
-                                debug.log(url);
+                                debug.log(url); //the loadstart event is triggered each time a new url (redirection) is loaded
+                                var data = api.util.parseAccessToken(url);
+                                if ($.type(data.access_token) === STRING) { //so we only close teh InAppBrowser once we have received an auth_token
+                                    $(authWindow).off();
+                                    authWindow.close();
+                                }
+                            }).on('loaderror', function (e) {
+                                debug.error(e.type + ': ' + e.message);
                             });
-                        } else { //this is a browser
+                        } else { //this is a browser --> simply redirect to login url
                             window.location.assign(url);
                         }
                     })
