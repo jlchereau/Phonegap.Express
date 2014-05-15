@@ -1,6 +1,6 @@
 chrome.app.runtime.onLaunched.addListener(function() {
     // create a new window and position it with a fixed size
-    var win = chrome.app.window.create('chrome.html', {
+    var win = chrome.app.window.create('../chrome_wrapper.html', {
         width: 580,
         height: 800 /*,
         minWidth:580,
