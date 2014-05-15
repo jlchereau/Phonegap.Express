@@ -1,0 +1,33 @@
+{
+    "name": "Phonegap.Express",
+    "description": "Phonegap.Express is a prototype built on MongoDB, nodeJS and Kendo UI to demonstrate accessing a RESTful JSON api secured with oAuth 2.0 from browsers and Phonegap.",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "offline_enabled" : true,
+    "app": {
+        "background": {
+            "scripts": [ "background.js" ]
+        }
+    },
+    "icons": {
+        "16": "./res/icon16.png",
+        "48": "./res/icon48.png",
+        "128": "./res/icon128.png"
+    },
+    "permissions": [
+        "storage",
+        "http://localhost:3000/*",
+        "http://www.sv-rndev-01:3000/*",
+        "http://expressjs.herokuapp.com/*",
+        "https://www.facebook.com/*",
+        "https://graph.facebook.com/*",
+        "https://accounts.google.com/*",
+        "https://www.googleapis.com/*",
+        "https://api.twitter.com/*",
+        "https://login.live.com/*",
+        "https://apis.live.net/*"
+    ],
+    "sandbox": {
+        "pages": [ "index.html" ]
+    }
+}

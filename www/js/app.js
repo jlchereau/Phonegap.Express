@@ -102,7 +102,7 @@
 
         api.util.log(MODULE + 'device ready');
         debug.log('application loaded at ' + window.location.href);
-        debug.log('access_token: ' + localStorage['access_token']);
+        debug.log('access_token: ' + api.util.getAccessToken());
 
         $('.login').on('click', function(e) {
             e.preventDefault(); //do not execute href

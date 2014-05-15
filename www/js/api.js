@@ -44,7 +44,7 @@
     }
 
     $(document).ready(function () {
-        api.util.log('access_token: ' + localStorage[ACCESS_TOKEN]);
+        api.util.log('access_token: ' + api.util.getAccessToken());
         api.util.parseAccessToken(window.location.href);
         api.util.cleanHistory();
     });
@@ -68,7 +68,7 @@
         },
 
         getSecurityHeaders: function () {
-            var accessToken = localStorage[ACCESS_TOKEN];
+            var accessToken = api.util.getAccessToken();
             if (accessToken) {
                 return { 'Authorization': 'Bearer ' + accessToken };
             }
@@ -105,13 +105,33 @@
         },
 
         setAccessToken: function (accessToken) {
-            localStorage[ACCESS_TOKEN] = accessToken;
-            api.util.log('access_token added to localStorage');
+            if(global.localStorage) {
+                localStorage.setItem(ACCESS_TOKEN, accessToken);
+                api.util.log('access_token added to localStorage');
+            } else if (chrome && chrome.storage && chrome.storage.local) {
+                chrome.storage.local.set(ACCESS_TOKEN, accessToken);
+                api.util.log('access_token added to chrome.storage.local');
+            }
+        },
+
+        getAccessToken: function() {
+            var ret;
+            if(global.localStorage) {
+                ret = localStorage.getItem(ACCESS_TOKEN);
+            } else if (chrome && chrome.storage && chrome.storage.local) {
+                ret = chrome.storage.local.get(ACCESS_TOKEN);
+            }
+            return ret;
         },
 
         clearAccessToken: function () {
-            localStorage.removeItem(ACCESS_TOKEN);
-            api.util.log('access_token removed from localStorage');
+            if(global.localStorage) {
+                localStorage.removeItem(ACCESS_TOKEN);
+                api.util.log('access_token removed from localStorage');
+            } else if (chrome && chrome.storage && chrome.storage.local) {
+                chrome.storage.local.remove(ACCESS_TOKEN);
+                api.util.log('access_token removed from chrome.storage.local');
+            }
         },
 
         /**
