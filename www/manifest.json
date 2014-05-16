@@ -16,6 +16,7 @@
     },
     "permissions": [
         "storage",
+        "webview",
         "http://localhost:3000/*",
         "http://www.sv-rndev-01:3000/*",
         "http://expressjs.herokuapp.com/*",

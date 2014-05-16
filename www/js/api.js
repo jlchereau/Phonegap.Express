@@ -25,7 +25,7 @@
         FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded',
         //TEXT_CONTENT_TYPE = 'text/plain',
         MODULE = 'api.js: ',
-        DEBUG = false; //IMPORTANT: Set DEBUG = false in production
+        DEBUG = true; //IMPORTANT: Set DEBUG = false in production
 
     api.endPoints = {
         root: 'http://expressjs.herokuapp.com',
@@ -40,29 +40,31 @@
 
     if (DEBUG) {
         //api.endPoints.root = 'http://www.sv-rndev-01.com:3000';
-        api.endPoints.root = 'http://localhost:3000';
+        //api.endPoints.root = 'http://localhost:3000';
     }
 
     $(document).ready(function () {
-        api.util.log('access_token: ' + api.util.getAccessToken());
-        api.util.parseAccessToken(window.location.href);
-        api.util.cleanHistory();
+        if (!(global.chrome && $.isEmptyObject(global.chrome.app))) { //avoids an error in chrome packaged apps
+            api.util.log(MODULE + 'access_token: ' + api.util.getAccessToken());
+            api.util.parseAccessToken(window.location.href);
+            api.util.cleanHistory();
+        }
     });
 
     api.util = {
 
         log: function (message) {
             if (DEBUG && global.console) {
-                console.log(MODULE + message);
+                console.log(message);
             }
         },
 
         error: function (message) {
             if (DEBUG && global.console) {
                 if (global.console.error) {
-                    console.error(MODULE + message);
+                    console.error(message);
                 } else {
-                    console.log(MODULE + message);
+                    console.log(message);
                 }
             }
         },
@@ -106,31 +108,23 @@
 
         setAccessToken: function (accessToken) {
             if(global.localStorage) {
-                localStorage.setItem(ACCESS_TOKEN, accessToken);
-                api.util.log('access_token added to localStorage');
-            } else if (chrome && chrome.storage && chrome.storage.local) {
-                chrome.storage.local.set(ACCESS_TOKEN, accessToken);
-                api.util.log('access_token added to chrome.storage.local');
+                global.localStorage.setItem(ACCESS_TOKEN, accessToken);
+                api.util.log(MODULE + 'access_token added to localStorage');
             }
         },
 
         getAccessToken: function() {
             var ret;
             if(global.localStorage) {
-                ret = localStorage.getItem(ACCESS_TOKEN);
-            } else if (chrome && chrome.storage && chrome.storage.local) {
-                ret = chrome.storage.local.get(ACCESS_TOKEN);
+                ret = global.localStorage.getItem(ACCESS_TOKEN);
             }
             return ret;
         },
 
         clearAccessToken: function () {
             if(global.localStorage) {
-                localStorage.removeItem(ACCESS_TOKEN);
-                api.util.log('access_token removed from localStorage');
-            } else if (chrome && chrome.storage && chrome.storage.local) {
-                chrome.storage.local.remove(ACCESS_TOKEN);
-                api.util.log('access_token removed from chrome.storage.local');
+                global.localStorage.removeItem(ACCESS_TOKEN);
+                api.util.log(MODULE + 'access_token removed from localStorage');
             }
         },
 
@@ -145,14 +139,14 @@
         cleanUrl: function (url) {
             var ret = url,
                 pos = api.util.getAccessTokenHashPos(url);
-            api.util.log('url before cleaning token info: ' + url);
+            api.util.log(MODULE + 'url before cleaning token info: ' + url);
             if (pos >= 0) {
                 ret = ret.substring(0, pos);
             }
             if (ret.slice(-1) === HASH) { //remove trailing hash if any
                 ret = ret.substring(0, ret.length - 1);
             }
-            api.util.log('url after cleaning token info: ' + ret);
+            api.util.log(MODULE + 'url after cleaning token info: ' + ret);
             return ret;
         },
 
@@ -176,7 +170,7 @@
     //Se also http://joseoncode.com/2011/09/26/a-walkthrough-jquery-deferred-and-promise/
 
     api.getSignInUrl = function (provider, returnUrl) {
-        api.util.log('calling getSignInUrl for ' + provider)
+        api.util.log(MODULE + 'calling getSignInUrl for ' + provider)
         return $.ajax({
             url: api.endPoints.root + api.endPoints.signIn.replace('{0}', provider),
             type: GET,
@@ -189,7 +183,7 @@
      * Api's that require being logged in (security headers)
      */
     api.signOut = function () {
-        api.util.log('calling signOut');
+        api.util.log(MODULE + 'calling signOut');
         return $.ajax({
             url: api.endPoints.root + api.endPoints.signOut,
             contentType: FORM_CONTENT_TYPE,
@@ -202,7 +196,7 @@
     };
 
     api.getHeartbeat = function () {
-        api.util.log('calling getHeartbeat');
+        api.util.log(MODULE + 'calling getHeartbeat');
         return $.ajax({
             url: api.endPoints.root + api.endPoints.heartbeat,
             type: GET,
@@ -219,7 +213,7 @@
     };
 
     api.getError = function () {
-        api.util.log('calling getError');
+        api.util.log(MODULE + 'calling getError');
         return $.ajax({
             url: api.endPoints.root + api.endPoints.error,
             type: GET,
@@ -230,7 +224,7 @@
     };
 
     api.getProfile = function () {
-        api.util.log('calling getProfile');
+        api.util.log(MODULE + 'calling getProfile');
         return $.ajax({
             url: api.endPoints.root + api.endPoints.profile,
             type: GET,
@@ -242,7 +236,7 @@
     };
 
     api.getValues = function () {
-        api.util.log('calling getValues');
+        api.util.log(MODULE + 'calling getValues');
         return $.ajax({
             url: api.endPoints.root + api.endPoints.values,
             type: GET,
@@ -254,7 +248,7 @@
 
     api.contents = {
         create: function (data) {
-            api.util.log('calling createContent');
+            api.util.log(MODULE + 'calling createContent');
             delete data._id; //!IMPORTANT
             return $.ajax({
                 url: api.endPoints.root + api.endPoints.contents,
@@ -268,7 +262,7 @@
         },
 
         readAll: function () {
-            api.util.log('calling readAllContents');
+            api.util.log(MODULE + 'calling readAllContents');
             return $.ajax({
                 url: api.endPoints.root + api.endPoints.contents,
                 type: GET,
@@ -280,7 +274,7 @@
         },
 
         update: function (data) {
-            api.util.log('calling readAllContents');
+            api.util.log(MODULE + 'calling readAllContents');
             return $.ajax({
                 url: api.endPoints.root + api.endPoints.contents + '/' + data._id,
                 type: 'PUT',
@@ -293,7 +287,7 @@
         },
 
         destroy: function (data) {
-            api.util.log('destroy');
+            api.util.log(MODULE + 'destroy');
             return $.ajax({
                 url: api.endPoints.root + api.endPoints.contents + '/' + data._id,
                 type: 'DELETE',
