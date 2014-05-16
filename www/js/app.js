@@ -113,8 +113,8 @@
 
             debug.log('Configuring chrome packaged app');
 
-            //redefine window.alert
-            window.alert = debug.error;
+            //redefine window.alert (we need a proxy because of this in debug.error)
+            window.alert = $.proxy(debug.error, debug);
 
             // initialize the pkg plugin
             $.pkg.init(window.top);
