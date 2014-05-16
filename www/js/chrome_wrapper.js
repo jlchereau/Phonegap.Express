@@ -86,6 +86,9 @@
             if(DEBUG && console) {
                 console.log(MODULE + 'initialized');
             }
+        } else {
+            //do not run in a frame otherwise oAuth fails (X-FRAME-OPTIONS = 'DENY')
+            window.top.location.replace(iframe.attr('src'));
         }
     });
 

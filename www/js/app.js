@@ -114,7 +114,7 @@
             debug.log('Configuring chrome packaged app');
 
             //redefine window.alert
-            window.alert = debug.log;
+            window.alert = debug.error;
 
             // initialize the pkg plugin
             $.pkg.init(window.top);
