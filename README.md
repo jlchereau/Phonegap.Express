@@ -1,6 +1,7 @@
 #Phonegap.Express
 
 [![Build Status](https://travis-ci.org/jlchereau/Phonegap.Express.svg?branch=master)](https://travis-ci.org/jlchereau/Phonegap.Express)
+[![Dependency Status](https://david-dm.org/jlchereau/Phonegap.Express.svg)](https://david-dm.org/jlchereau/Phonegap.Express)
 
 > Phonegap Express is a prototype built on MongoDB, nodeJS and Kendo UI to demonstrate accessing a RESTful JSON api secured with oAuth 2.0 from browsers and Phonegap
 
