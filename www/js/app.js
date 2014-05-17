@@ -21,11 +21,12 @@
                     type: STRING,
                     required: true
                 },
-                "user": {
+                "user_id": {
                     type: STRING,
-                    required: true
+                    required: true,
+                    editable: false
                 },
-                "created": {
+                "date": {
                     type: DATE
                     //defaultValue: new Date()
                 },

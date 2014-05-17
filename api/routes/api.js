@@ -13,48 +13,47 @@ exports.values = function(req, res) {
 
 //This is another route to protect
 exports.profile = function(req, res) {
-    res.json({ username: req.user[req.user.provider].name, email: req.user[req.user.provider].email });
+    res.json({ username: req.user.name, email: req.user.email });
 };
 
 exports.contents = {
     getAll: function (req, res) {
-        var userId = 'Jacques' || req.query.user || req.user.id;
-        contentService.getAll(userId, function (error, files) {
+        contentService.getAll(function (error, contents) {
             if (error) return res.json(500, 'Internal Server Error');
-            if (files === null) files = {};
-            return res.json(200, files);
+            if (contents === null) contents = {};
+            return res.json(200, contents);
         });
     },
     getById: function (req, res) {
-        contentService.getById(req.params.id, function (error, file) {
+        contentService.getById(req.params.id, function (error, content) {
             if (error) return res.json(500, 'Internal Server Error');
-            if (file == null) return res.json(404, 'Not Found');
-            return res.json(200, file);
+            if (content == null) return res.json(404, 'Not Found');
+            return res.json(200, content);
         });
     },
     put: function (req, res) {
         if (isEmpty(req.body.name)) return res.json(400, 'Bad Request');
-        req.body.user = 'Jacques';
-        contentService.put(req.params.id, req.body, function (error, file) {
+        req.body.user_id = req.user.id;
+        contentService.put(req.params.id, req.body, function (error, content) {
             if (error) return res.json(500, 'Internal Server Error');
-            if (file == null) return res.json(404, 'Not Found');
+            if (content == null) return res.json(404, 'Not Found');
             return res.json(204, 'No Content');
         });
     },
     post: function (req, res) {
         if (isEmpty(req.body.name)) return res.json(400, 'Bad Request');
-        req.body.user = 'Jacques';
-        contentService.post(req.body.name, req.body, function (error, file) {
+        req.body.user_id = req.user.id;
+        contentService.post(req.body.name, req.body, function (error, content) {
             if (error) return res.json(500, 'Internal Server Error');
-            if (file == null) return res.json(409, 'Conflict');
-            res.location('/api/v1/files/' + file._id);
-            return res.json(201, file);
+            if (content == null) return res.json(409, 'Conflict');
+            res.location('/api/contents/' + content._id);
+            return res.json(201, content);
         });
     },
     delete: function (req, res) {
-        contentService.del(req.params.id, function (error, file) {
+        contentService.del(req.params.id, function (error, content) {
             if (error) return res.json(500, 'Internal Server Error');
-            if (file == null) return res.json(404, 'Not Found');
+            if (content == null) return res.json(404, 'Not Found');
             return res.json(204, 'No Content');
         });
     }

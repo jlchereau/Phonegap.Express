@@ -240,6 +240,7 @@
         return $.ajax({
             url: api.endPoints.root + api.endPoints.values,
             type: GET,
+            cache: false,
             //xhrFields: { withCredentials: true }, //send cookies
             headers: api.util.getSecurityHeaders(),
             crossDomain: true
@@ -266,6 +267,7 @@
             return $.ajax({
                 url: api.endPoints.root + api.endPoints.contents,
                 type: GET,
+                cache: false,
                 dataType: JSON,
                 //xhrFields: { withCredentials: true }, //send cookies
                 headers: api.util.getSecurityHeaders(),

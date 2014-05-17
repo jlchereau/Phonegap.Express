@@ -2,6 +2,7 @@ var BearerStrategy = require('passport-http-bearer').Strategy,
     config = require('./configuration'),
     mongoose = require('mongoose'),
     User = mongoose.model('User');
+    Token = mongoose.model('Token');
 
 function Authentication() {
 
@@ -17,11 +18,16 @@ function Authentication() {
                 // authenticated `user`.  Note that in a production-ready application, one
                 // would want to validate the token for authenticity.
 
-                //TODO Google: https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=
-                User.findOne({ token: token }, function(err, user) {
+                Token.findOne({ access: token }, function(err, token) {
                     if (err) { return done(err); }
-                    if (!user) { return done(null, false); }
-                    return done(null, user);
+                    if (!token) { return done(null, false); }
+                    //TODO: Google: https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=
+                    //TODO: expired tokens??????????????
+                    User.findOne({ _id: token.user_id }, function(err, user) {
+                        if (err) { return done(err); }
+                        if (!user) { return done(null, false); }
+                        return done(null, user);
+                    });
                 });
             });
         }

@@ -66,13 +66,15 @@ var request = require('request'),//TODO: use https instead of request module to 
     mongoose = require('mongoose'),
     Session = mongoose.model('Session'),
     User = mongoose.model('User'),
+    Token = mongoose.model('Token'),
     config = require('../config/configuration'),
-    /*
+
+    //oAuth 1.0a vocabulary
     oAuth1 = {
+
         version: 1
         //aAuth1 vocabulary to be used with Twitter and other providers implementing the oAuth1 flow
     },
-    */
     //oAuth 2.0 vocabulary
     oAuth2 = {
         version: 2,
@@ -87,7 +89,7 @@ var request = require('request'),//TODO: use https instead of request module to 
     //supported/tested provider configuration
     providers = {
         facebook: {
-            //oAuth: oAuth2 -> test providers[provider].oAuth.version to determine flow and vocabulary
+            oAuth                   : oAuth2,
             authorizationURL        : 'https://www.facebook.com/dialog/oauth',
             tokenURL                : 'https://graph.facebook.com/oauth/access_token',
             refreshUrl              : '', //TODO
@@ -97,7 +99,7 @@ var request = require('request'),//TODO: use https instead of request module to 
             scope                   : 'email public_profile'
         },
         google: {
-            //oAuth: oAuth2 -> test providers[provider].oAuth.version to determine flow and vocabulary
+            oAuth                   : oAuth2,
             authorizationURL        : 'https://accounts.google.com/o/oauth2/auth',
             tokenURL                : 'https://accounts.google.com/o/oauth2/token',
             refreshUrl              : '', //TODO
@@ -107,7 +109,7 @@ var request = require('request'),//TODO: use https instead of request module to 
             scope                   : 'email profile' //'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
         },
         twitter: {
-            //oAuth: oAuth1 -> test providers[provider].oAuth.version to determine flow and vocabulary
+            oAuth                   : oAuth1,
             authorizationURL        : '', //Not used - See https://dev.twitter.com/docs/auth/application-only-auth
             tokenURL                : 'https://api.twitter.com/oauth2/token',
             refreshUrl              : '', //TODO
@@ -117,7 +119,7 @@ var request = require('request'),//TODO: use https instead of request module to 
             scope                   : ''
         },
         windowslive: {
-            //oAuth: oAuth2 -> test providers[provider].oAuth.version to determine flow and vocabulary
+            oAuth                   : oAuth2,
             authorizationURL        : 'https://login.live.com/oauth20_authorize.srf',
             tokenURL                : 'https://login.live.com/oauth20_token.srf',
             refreshUrl              : '', //TODO
@@ -243,18 +245,21 @@ exports.callback = function(req, res) {
         } catch(err) { //facebook
             token = qs.parse(body);
         }
-        if (token.error) return res.send(502, token.error);
+        if (token.error) return res.send(502, token.error); //TODO: improve error management
         //Facebook gives no token_type, Google gives 'Bearer' and Windows Live gives 'bearer', but is this test really useful?
         if ((token.token_type) && (token.token_type.toLowerCase() !== 'bearer')) return res.send(502, 'Invalid token type');
-        //Note: Google adds token.id_token, a JWT token - see http://stackoverflow.com/questions/8311836/how-to-identify-a-google-oauth2-user/13016081#13016081
-        if (token.id_token) delete token.id_token;
         request.get(providers[session.provider].profileURL + '?' + oAuth2.access_token + '=' + encodeURIComponent(token.access_token), profileHandler);
         //TODO: isn't it too soon to redirect as the profile may not have been saved yet?
         if(session.returnUrl) {
+            var params = {
+                access_token: token.access_token,
+                expires: token.expires_in || token.expires, //Note: Facebook as token.expires instead of token.expires_in
+                state: session.state
+            };
             token.state = session.state;
-            res.redirect(session.returnUrl + '#' + qs.stringify(token));
+            res.redirect(session.returnUrl + '#' + qs.stringify(params));
         }
-        res.json(token); //Without returnUrl, the client receives the token as json
+        res.json(token); //Without returnUrl, the client receives the token as json to do whatever he/she deems necessary
     }
 
     /**
@@ -289,25 +294,42 @@ exports.callback = function(req, res) {
      */
     function profileHandler(err, resp, body) {
         var profile = profileParser(body), query = {};
-        if (profile.error) return console.error("Error returned from Google: ", profile.error);
+        if (profile.error) return console.error("Error returned from Google: ", profile.error); //TODO: improve
+
+        //Find profile using unique identity provider's id
         query[session.provider + '.id'] = profile.id;
         User.findOne(query, function(err, data) {
-            if(data === null) { //user not found
-                data = {
-                    provider: session.provider,
-                    token: token.access_token,
-                    expires: token.expires_in || token.expires  //Google uses expires_in, Facebook uses expires
-                };
+            if (err) return console.error(err); //TODO: improve
+            if(data === null) { //profile not found
+                data = {};
                 data[session.provider] = profile;
                 user = new User(data);
-            } else { //user found -> update
+            } else { //profile found -> update user
                 user = data;
-                user.provider = session.provider;
-                user.token = token.access_token;
-                user.expires = token.expires_in || token.expires;
                 user[session.provider] = profile;
             }
+            //Save new or updated user
             user.save(function(err, data){
+                if (err) return console.error(err); //TODO: improve
+                user = data; //so as to have an _id
+                //Find token
+                Token.findOne({access : token.access_token }, function(err, data) {
+                    if (err) return console.error(err); //TODO: improve
+                    if(data === null) {
+                        data = {
+                            user_id: user._id,
+                            provider: session.provider,
+                            agent: session.agent,
+                            address: session.address,
+                            //updated,
+                            expires: token.expires_in || token.expires, //Google uses expires_in, Facebook uses expires
+                            access: token.access_token
+                            //refresh: ''
+                        };
+                        new Token(data).save();
+                        //TODO: remove expired tokens?
+                    }
+                });
                 session.remove(); //.exec();
                 //Also purge sessions older than 24 hours
                 Session.where('created').lte(Date.now() - 24*60*60*1000).remove().exec();
@@ -360,9 +382,9 @@ exports.callback = function(req, res) {
         if (temp.locale) {
             profile.locale = temp.locale;
         }
-        if (temp.name) {
-            profile.name = temp.name;
-        }
+        //if (temp.name) {
+        //    profile.name = temp.name;
+        //}
         if (temp.picture) {
             profile.picture = temp.picture;
         }

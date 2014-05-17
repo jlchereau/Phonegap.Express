@@ -5,9 +5,8 @@ var mongoose = require('mongoose'),
 function ContentService() {};
 
 //Read all
-ContentService.prototype.getAll = function(user, callback){
-    var query = {"user" : user};
-    Content.find(query, function(error, contents) {
+ContentService.prototype.getAll = function(callback){
+    Content.find({}, function(error, contents) {
         if (error) return callback(error, null);
         return callback(null, contents);
     });
