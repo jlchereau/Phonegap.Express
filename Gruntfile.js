@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         env: {
             test: { NODE_ENV: 'test' }
         },
-        cafemocha: {
+        mochaTest: {
             test: {
                 src: 'test/*.js',
                 options: {
@@ -19,9 +19,9 @@ module.exports = function(grunt) {
 
     // Load NpmTasks
     grunt.loadNpmTasks('grunt-env');
-    grunt.loadNpmTasks('grunt-cafe-mocha');
+    grunt.loadNpmTasks('grunt-mocha-test');
 
     // Default task(s).
-    grunt.registerTask('test', ['env:test', 'cafemocha:test']);
+    grunt.registerTask('test', ['env:test', 'mochaTest:test']);
 
 }
